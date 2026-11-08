@@ -1,0 +1,18 @@
+{
+ "permissions": {
+  "deny": [
+   "Read(~/.claude/**)",
+   "Read(~/.config/**)",
+   "Read(~/.ssh/**)",
+   "Read(~/.gnupg/**)",
+   "Read(~/.aws/**)",
+   "Bash(*&&*)",
+   "Bash(*$(*)",
+   "Bash(*`*)",
+   "WebFetch(domain:127.0.0.1)",
+   "WebFetch(domain:localhost)",
+   "WebFetch(domain:[::1])",
+   "WebFetch(domain:0.0.0.0)"
+  ]
+ }
+}
