@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>貓咪辦公室(分區版)</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23211b3a%22%2F%3E%3Cpath%20d%3D%22M12%2062C2%2056%204%2044%2010%2040%22%20stroke%3D%22%23b86a1f%22%20stroke-width%3D%227%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M8%2030L10%204L28%2016Z%22%20fill%3D%22%23ec9a45%22%20stroke%3D%22%23b86a1f%22%20stroke-width%3D%223%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M56%2030L54%204L36%2016Z%22%20fill%3D%22%23ec9a45%22%20stroke%3D%22%23b86a1f%22%20stroke-width%3D%223%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M12%2018L13%2010L21%2015Z%22%20fill%3D%22%23ff8fa3%22%2F%3E%3Cpath%20d%3D%22M52%2018L51%2010L43%2015Z%22%20fill%3D%22%23ff8fa3%22%2F%3E%3Cellipse%20cx%3D%2232%22%20cy%3D%2236%22%20rx%3D%2225%22%20ry%3D%2221%22%20fill%3D%22%23ec9a45%22%20stroke%3D%22%23b86a1f%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M32%2015v8M24%2017l2%206M40%2017l-2%206%22%20stroke%3D%22%23b86a1f%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3Cellipse%20cx%3D%2232%22%20cy%3D%2245%22%20rx%3D%2211%22%20ry%3D%228%22%20fill%3D%22%23ffe4bf%22%2F%3E%3Cellipse%20cx%3D%2221%22%20cy%3D%2233%22%20rx%3D%224.5%22%20ry%3D%226%22%20fill%3D%22%232a2140%22%2F%3E%3Ccircle%20cx%3D%2222.5%22%20cy%3D%2230.5%22%20r%3D%221.8%22%20fill%3D%22%23fff%22%2F%3E%3Cellipse%20cx%3D%2243%22%20cy%3D%2233%22%20rx%3D%224.5%22%20ry%3D%226%22%20fill%3D%22%232a2140%22%2F%3E%3Ccircle%20cx%3D%2244.5%22%20cy%3D%2230.5%22%20r%3D%221.8%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20d%3D%22M28.5%2041h7l-3.5%204Z%22%20fill%3D%22%23ff8fa3%22%2F%3E%3Cpath%20d%3D%22M32%2045v2M32%2047Q28%2051%2025%2048M32%2047Q36%2051%2039%2048%22%20stroke%3D%22%232a2140%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M2%2040l9%202M2%2047l9-2M62%2040l-9%202M62%2047l-9-2%22%20stroke%3D%22%23fff2d6%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
 <style>
 :root{color-scheme:dark;--bg:#15122a;--bg2:#1d1838;--card:#241e42;--line:#3d3563;--fg:#f4eefc;--dim:#b7afd3;--acc:#ff9f6e;
 --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;--r:14px}
@@ -237,7 +238,7 @@ const PINK="#f6a9a6",HRX=29.5,HRY=24.3; // 全姿勢統一頭身比例
 /* ---- 繪圖基元 ---- */
 // body 類部件先排隊,遇到非 body 繪製(或姿勢結束)才一次「先全部畫輪廓、再全部填色」:
 // 髖/軀幹/前臂合成一個無接縫剪影,只靠柔和陰影表現層次
-let XF=null,pend=[],inFl=false,BO=1,HDY=0,TWA=0; // BO=眼睛開度 HDY=頭部呼吸延遲位移 TWA=尾尖抽動角
+let XF=null,pend=[],inFl=false,BO=1,HDY=0,TWA=0,YA=0; // BO=眼睛開度 HDY=頭部呼吸延遲位移 TWA=尾尖抽動角
 function flush(){
   if(inFl||!pend.length)return;inFl=true;const L=pend;pend=[];
   L.forEach(bOutline);L.forEach(bFill);L.forEach(b=>{if(b.ov){g.save();g.setTransform(b.tr);b.ov();g.restore()}});inFl=false;
@@ -271,6 +272,7 @@ function overlay(C,role,fx,belly,p){ // 單位圓座標:每隻最多 1~2 大塊�
   const body=role==="body",head=role==="head",bk=!!p.back,lt=C.belly||C.white;
   switch(C.type){
    case "tux":
+    if(body&&belly){const q=p.bb||[.1,.74,.6];U(0,q[0],q[1],q[2],0,C.white)}
     if(body&&!belly){const b=p.bl||[0,.9,.72,.34];U(b[0],b[1],b[2],b[3],0,C.white);(p.chs||(p.ch?[[p.ch,1]]:[])).forEach(([k,a])=>{if(a<=.01)return;if(k==="f")U(0,.3,.27,.62,0,C.white,a);else U(.74,.38,.36,.7,0,C.white,a)})}
     if(head&&!bk){U(fx*.3,.8,.5,.46,0,C.white);U(fx*.3,-.1,.122,.3,0,C.white);U(fx*.3,.3,.225,.5,0,C.white)}
     break;
@@ -283,7 +285,7 @@ function overlay(C,role,fx,belly,p){ // 單位圓座標:每隻最多 1~2 大塊�
     if(head&&!bk)g.drawImage(ptMask(C,fx),-1.6,-1.6,3.2,3.2);
     break;
    default:
-    if(body){const b=p.bl;if(b&&!belly)U(b[0],b[1],b[2],b[3],0,lt);else U(0,belly?.1:.84,belly?.74:.8,belly?.6:.42,0,lt)}
+    if(body){const b=p.bl;if(b&&!belly)U(b[0],b[1],b[2],b[3],0,lt);else if(belly){const q=p.bb||[.1,.74,.6];U(0,q[0],q[1],q[2],0,lt)}else U(0,.84,.8,.42,0,lt)}
     if(head&&!bk)U(fx*.3,.72,.5,.32,0,lt);
     if(C.bib&&body&&!belly)(p.chs||(p.ch?[[p.ch,1]]:[])).forEach(([k,a])=>{if(a<=.01)return;if(k==="f")U(0,.3,.27,.62,0,"#fffaf2",a);else U(.74,.38,.3,.7,0,"#fffaf2",a)});
     if(C.pat&&!(belly&&body))C.pat.forEach(([r,x,y,rx,ry,rt,col])=>{if((r==="b")===body&&(r==="h")===head)U(x,y,rx,ry,rt,col)});
@@ -351,6 +353,7 @@ function face(h){ // 水汪汪大眼(大+小高光)、迷你粉鼻、小嘴、�
   [-1,1].forEach(s=>{
     const x=ex0+s*sp;let k=eyes;if(k==="wink")k=s>0?"happy":"open";
     if((k==="open"||k==="wide")&&BO<.3)k="blink";
+    if(YA>.3&&!h.back&&(k==="open"||k==="wide"||k==="happy"||k==="blink"))k="squint"; // 打哈欠:眼睛瞇成 > <
     if(k==="open"||k==="wide"){
       g.save();if(BO<1){g.translate(x,ey);g.scale(1,Math.max(.3,BO));g.translate(-x,-ey)}
       const r=rx*(k==="wide"?.148:.126);if(h.C&&(h.C.type==="siamese"||h.C.dk)){ellp(x,ey+r*.05,r*1.3,r*1.38);g.fillStyle="rgba(255,243,226,.3)";g.fill()}ellp(x,ey,r,r*1.1);g.fillStyle=INK;g.fill();
@@ -369,10 +372,15 @@ function face(h){ // 水汪汪大眼(大+小高光)、迷你粉鼻、小嘴、�
   });
   const nx=ex0*1.05,ny=ey+ry*.24;
   ellp(nx,ny,1.9,1.4);g.fillStyle="#f08e98";g.fill();
-  if(h.mouth==="o"){ellp(nx,ny+4.4,1.45,1.9);g.fillStyle="#8e4650";g.fill();ellp(nx,ny+5.2,.85,.7);g.fillStyle="#f08e98";g.fill()}
+  if(YA>.06&&!h.back){const y=YA,my=ny+3.4+2.7*y,ryy=.7+4.7*y,rxx=1.9+2.7*y; // 哈欠:嘴從小橫線張成大橢圓,裡面有粉舌頭
+    ellp(nx,my,rxx,ryy);g.fillStyle="#8e4650";g.fill();ellp(nx,my+ryy*.42,rxx*.62,ryy*.5);g.fillStyle="#f08e98";g.fill()}
+  else if(h.mouth==="o"){ellp(nx,ny+4.4,1.45,1.9);g.fillStyle="#8e4650";g.fill();ellp(nx,ny+5.2,.85,.7);g.fillStyle="#f08e98";g.fill()}
   else{const sm=h.C&&h.C.type==="siamese";g.strokeStyle=h.C&&h.C.dk?"#ead2c8":sm?"#845a52":"#9a6a62";g.lineWidth=sm?1.25:1.1;const mr=(h.mouth==="smile"||h.mouth==="tongue")?2.7:2;
     g.beginPath();g.arc(nx-mr,ny+1.6,mr,.15,Math.PI-.15);g.stroke();g.beginPath();g.arc(nx+mr,ny+1.6,mr,.15,Math.PI-.15);g.stroke();
-    if(h.tongue||h.mouth==="tongue"){ellp(nx,ny+7,1.8,2.2);g.fillStyle="#f08e98";g.fill()}}
+    if(h.tongue){const ty=ny+3.7,tw=1.75,th=3.6;g.save();g.beginPath();g.moveTo(nx-tw,ty);g.lineTo(nx-tw,ty+th*.5);g.quadraticCurveTo(nx-tw,ty+th,nx,ty+th);g.quadraticCurveTo(nx+tw,ty+th,nx+tw,ty+th*.5);g.lineTo(nx+tw,ty); // 舌頭:從 ω 下緣往下吐的小 U(頂邊不描線,被嘴線蓋住),淡粉跟鼻子區分
+      g.fillStyle="#ffbccb";g.fill();g.strokeStyle="#e78aa2";g.lineWidth=.6;g.lineJoin="round";g.stroke();g.beginPath();g.moveTo(nx,ty+.6);g.lineTo(nx,ty+th*.62);g.lineWidth=.45;g.stroke();g.restore();
+      g.beginPath();g.arc(nx-mr,ny+1.6,mr,.15,Math.PI-.15);g.stroke();g.beginPath();g.arc(nx+mr,ny+1.6,mr,.15,Math.PI-.15);g.stroke()}
+    else if(h.mouth==="tongue"){ellp(nx,ny+7,1.8,2.2);g.fillStyle="#f08e98";g.fill()}}
 }
 function tuft(C,rx,ry,d){ // 呆毛:與頭同剪影(輪廓先、填色後)
   g.save();g.translate(d*rx*.12+2,-ry*.9);g.scale(.72,.72);
@@ -473,14 +481,15 @@ function body(C,pts,o){ // 排進 pend:與其他 body 合成無縫剪影
   o=o||{};pts=TP(pts,o);
   let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const [x,y] of pts){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
   const b={C,role:"body",path:pts,fx:0,belly:o.belly,tr:g.getTransform(),
-    p:{x:(x0+x1)/2,y:(y0+y1)/2,rx:(x1-x0)/2,ry:(y1-y0)/2,r:0,pth:true,bl:o.bl,ch:o.ch}};
+    p:{x:(x0+x1)/2,y:(y0+y1)/2,rx:(x1-x0)/2,ry:(y1-y0)/2,r:0,pth:true,bl:o.bl,ch:o.ch,bb:o.bb}};
   pend.push(b);bodyDone=true;LASTBODY=b;
 }
 function bean(cx,cy,rx,ry,e,n){n=n||16;e=e||2.4;const a=[];for(let i=0;i<n;i++){const t=i/n*TAU,c=Math.cos(t),s=Math.sin(t);a.push([cx+rx*Math.sign(c)*Math.pow(Math.abs(c),2/e),cy+ry*Math.sign(s)*Math.pow(Math.abs(s),2/e)])}return a}
 const PEAR=[[0,-43],[10,-41],[17,-34],[22,-25],[27,-16],[30,-8],[26,-2.2],[12,-.4],[0,0],[-12,-.4],[-26,-2.2],[-30,-8],[-27,-16],[-22,-25],[-17,-34],[-10,-41]];
 const LOAFP=[[-18,-37.5],[-3,-40],[11,-38.5],[22,-31],[28,-19],[27,-7],[17,-1.8],[2,-1],[-14,-1.4],[-26,-3.5],[-33,-13],[-31,-26]];
 const WSP=[[-22,-37],[-8,-41],[8,-40.5],[19,-36],[26,-26],[25,-14],[17,-8],[0,-7],[-14,-8],[-25,-13],[-28,-23],[-27,-32]];
-const SIT=bean(0,-22.5,29.5,22.5,2.5),LOAF=LOAFP,SPR=bean(0,-20,35,19.5,2.4),BALL=bean(0,-23,40,23,2.3),STR=bean(0,0,32,19,2.4),EAT=bean(0,0,28,18,2.4),SCR=bean(0,-38,19,31,2.4),RLB=bean(-4,-14,38,14,2.4),WS=bean(-1,-22,33,17,2.5),WF=bean(0,-26,23,19,2.4);
+const SIDEP=[[-41,-8],[-46.5,-15],[-45.5,-23],[-39,-29.5],[-29,-34],[-17,-36.5],[-8,-37.2],[3,-38],[15,-34],[22,-22],[18,-10],[10,-4],[-8,-3.5],[-26,-4],[-34,-5.5]];
+const SIT=bean(0,-22.5,29.5,22.5,2.5),LOAF=LOAFP,SPR=bean(0,-20,35,19.5,2.4),SPR2=[[-30,-3],[-16,-.8],[0,-1],[14,-1.6],[26,-3.5],[34,-10],[35,-20],[31,-29],[21,-35],[6,-37.5],[-10,-34.5],[-24,-33],[-34,-26],[-38,-15]],BALL=bean(0,-23,40,23,2.3),STR=bean(0,0,32,19,2.4),EAT=bean(0,0,28,18,2.4),SCR=bean(0,-38,19,31,2.4),RLB=bean(-4,-14,38,14,2.4),WS=bean(-1,-22,33,17,2.5),WF=bean(0,-26,23,19,2.4);
 // 短胖腿:圓頭膠囊(落地腿只露出約 13 單位),無關節
 let bodyDone=false,FARC=[]; // FARC=本姿勢遠側腿外形(供近側腿畫 1px 亮縫,只裁在遠側腿上) // 本姿勢已排入軀幹 => 之後的腿畫在軀幹前面(需內部輪廓)
 function sdist(ax,ay,bx,by,cx,cy,dx,dy){ // 兩線段最短距離(近似:端點到對方線段)
@@ -571,24 +580,75 @@ loaf(C,S){
   body(C,SIT);hindFeet(C,-3.5,20);
   head(C,{x:0,y:-50+S.nod,rx:26,ry:21.5,r:S.look+.05,back:true,ef:S.ef});
  },
-sprawl(C,S){ // 翻肚(參照 Gemini):軀幹橫躺、頭同尺寸靠右肩;後腿(髖,左)較長、前腿(胸,右、靠頭)短且腕折向胸;遠側腿畫在軀幹後、近側腿畫在前;S.sp=0 坐 … 1 翻倒(進出場 0.4s 形變)
+sprawl(C,S){ // 翻肚(真仰躺):背貼地(軀幹下緣)、白肚朝上居中;軀幹 C 形微彎;前腿自胸口兩側、後腿自下腹兩側;前爪折向胸口、後腿外八 V 字;頭同尺寸直立朝上、向右歪 ~20°;S.sp=0 坐 … 1 翻倒(進出場 0.4s 形變)
   const sp=S.sp==null?1:S.sp,lp=(p,q,t)=>p+(q-p)*t,eB=ez(cl01(sp/.75)),eT=ez(cl01((sp-.25)/.75)),gL=ez(cl01((sp-.45)/.5));
-  let bp=SPR;
-  if(sp<1){const cy=P=>{const R=rsmp(P,28);let m=0;for(let i=1;i<R.length;i++)if(R[i][0]<R[m][0])m=i;return R.slice(m).concat(R.slice(0,m))},A1=cy(PEAR),B1=cy(SPR);bp=A1.map((p,i)=>[lp(p[0],B1[i][0],eB),lp(p[1],B1[i][1],eB)])}
+  let bp=SPR2;
+  if(sp<1){const cy=P=>{const R=rsmp(P,28);let m=0;for(let i=1;i<R.length;i++)if(R[i][0]<R[m][0])m=i;return R.slice(m).concat(R.slice(0,m))},A1=cy(PEAR),B1=cy(SPR2);bp=A1.map((p,i)=>[lp(p[0],B1[i][0],eB),lp(p[1],B1[i][1],eB)])}
   const hg=(pts,k)=>{const o=pts[0];return pts.map(([x,y],i)=>i?[o[0]+(x-o[0])*k,o[1]+(y-o[1])*k]:[x,y])};
-  tail(C,[lp(22,-27,eB),lp(-9,-15,eB),lp(52,-50,eB),lp(-14,-8,eB),lp(56,-60,eB),lp(7,-10,eB),lp(28,-64,eB),lp(4,-6+S.sw*.5,eB)],9);
-  if(gL>.02){bendLeg(C,hg([[-24,-35],[-22,-45],[-17,-55]],gL),{wb:4.2,bean:1,far:true});bendLeg(C,hg([[22,-34],[24,-43],[29,-50]],gL),{wb:3.9,bean:1,far:true})}
-  body(C,bp,{belly:true});
+  let tk=0,tp=0;if(!S.R&&sp>.97){const T=S.t+(S.ph||0)*.7,cyc=Math.floor(T/4.4),u=(T-cyc*4.4-1.6)/.42,hs=Math.sin(cyc*12.9898+(S.ph||0)*3.1)*43758.5453;if(u>0&&u<1&&((hs-Math.floor(hs))<.5||Q.has("twitch"))){tp=Math.sin(Math.PI*u);tk=(Math.floor(hs*7)&1)}} // 偶爾(~每 9 秒)輕抽一下:尾尖或近側前爪,0.4 秒內小幅回彈;REDUCED 不抽
+  tail(C,[lp(22,-30,eB),lp(-9,-10,eB),lp(52,-56,eB),lp(-18,-2,eB),lp(56,-80,eB),lp(-14,-14,eB),lp(28,-84,eB),lp(-26,-32+S.sw*.5-(tk?tp*6:0),eB)],9);
+  if(gL>.02){bendLeg(C,hg([[-20,-31],[-27,-39],[-33,-45]],gL),{wb:4.2,bean:1,far:true});bendLeg(C,hg([[17,-34],[20,-43],[13,-45.5]],gL),{wb:3.8,bean:1,far:true})}
+  body(C,bp,{belly:true,bb:[-.04,.62,.56]});
   if(sp<.5){const k=ez(cl01(sp/.45));g.save();g.translate(0,-3.5);g.scale(1-k*.9,1-k*.85);g.translate(0,3.5);hindFeet(C,-3.5,20-k*8,true);g.restore()}
-  if(gL>.02){bendLeg(C,hg([[-34,-34],[-39,-46],[-38,-59]],gL),{wb:4.6,bean:1});bendLeg(C,hg([[10,-36],[11,-46],[18,-52]],gL),{wb:4.1,bean:1})}
-  head(C,{x:lp(0,58,eT),y:lp(-50,-29,eT),r:lp(0,2.95,eT),d:lp(0,.5,eT),notuft:sp>.5,eyes:E(S,"happy"),mouth:SM(S)||"smile",ef:S.ef});
+  if(gL>.02){bendLeg(C,hg([[-29,-12],[-38,-10],[-47,-3.5]],gL),{wb:4.6,bean:1});bendLeg(C,hg([[27,-10],[25,-20-(tk?0:tp*1.5)],[15+(tk?0:tp*3.5),-26-(tk?0:tp*4)]],gL),{wb:4.0,bean:1})}
+  head(C,{x:lp(0,54,eT),y:lp(-50,-26,eT),r:lp(0,.25,eT),d:lp(0,.12,eT),eyes:E(S,"happy"),mouth:SM(S)||"smile",ef:S.ef});
  },
- groom(C,S){
+ side(C,S){ // 側躺(放鬆睡姿):面向右側躺;背線從臀圓順升到肩、奶油肚在下緣;尾巴平放向左、尖端微翹;後腿折向後下、白襪腳疊在尾根下方;近側前腿沿肚、白爪收在胸/下巴前;頭枕低、閉眼;呼吸由整體縮放帶出
+  const toes=(x,y,r,rx,ry,n)=>{ // 圓掌腳套的趾縫線(朝左前)
+    g.save();g.translate(x,y);g.rotate(r);g.strokeStyle=C.type==="siamese"?C.ui:C.line;g.lineWidth=IW*1.2;g.lineCap="round";
+    for(let i=0;i<n;i++){const k=(i-(n-1)/2)*.62;g.beginPath();g.moveTo(-rx*.42,ry*k*.7);g.lineTo(-rx*.86,ry*k*1.0);g.stroke()}g.restore()};
+  tail(C,[-34,-20,-47,-16,-62,-12,-75,-15.5+S.sw*.45],9.6);
+  flush(); // 尾巴先畫完:之後臀/大腿輪廓蓋在尾巴上,形成清楚的圓大腿外形
+  bendLeg(C,[[-20,-20],[-30,-15],[-42,-9.5]],{wb:4.2,far:true});
+  body(C,SIDEP,{bl:[.28,.8,.62,.42]});
+  (()=>{ // 整條後腿:描自參考圖的封閉輪廓(內緣線=填色邊界,外框由 OW 描出);後半(右側 3 點)埋進身體內;白襪=曲線邊(大腿圓弧)左側
+    const LG=[[-41.95,-14.12],[-45.03,-14.93],[-47.7,-13.01],[-50.72,-11.79],[-53.22,-10.1],[-55.33,-7.62],[-55.72,-4.44],[-53.22,-2.42],[-50.01,-3.0],[-46.99,-4.3],[-43.85,-5.26],[-40.59,-4.96],[-37.5,-5.6],[-34.5,-8.5],[-33.5,-12.5],[-36.5,-15.8]],
+      SK=[[-46.46,-16.79],[-47.38,-13.1],[-48.43,-9.55],[-47.77,-6.52],[-45.67,-4.68],[-43.83,-2.04]];
+    const P=()=>{g.beginPath();sp(LG,false)};
+    const pc=fillOf(C,"paw"),sock=pc!==C.base;
+    pend.push({tr:g.getTransform(),out:()=>{P();g.lineJoin="round";g.lineWidth=OW*2;g.strokeStyle=C.line;g.stroke();g.fillStyle=C.line;g.fill()},
+      fl:()=>{
+        if(!sock){P();g.fillStyle=C.base;g.fill();return}
+        const cv=(dx)=>{for(let i=0;i<SK.length-1;i++){const p0=SK[Math.max(0,i-1)],p1=SK[i],p2=SK[i+1],p3=SK[Math.min(SK.length-1,i+2)];g.bezierCurveTo(p1[0]+dx+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6,p2[0]+dx-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6,p2[0]+dx,p2[1])}};
+        g.save();P();g.clip(); // 兩色各自只填自己那側(曲線邊略重疊),避免整塊底色疊上去在輪廓邊緣漏出亮點
+        g.fillStyle=C.base;g.beginPath();g.moveTo(-30,-19);g.lineTo(SK[0][0]-.25,SK[0][1]);cv(-.25);g.lineTo(-44.05,3);g.lineTo(-30,3);g.closePath();g.fill();
+        g.fillStyle=pc;g.beginPath();g.moveTo(-60,-19);g.lineTo(SK[0][0],SK[0][1]);cv(0);g.lineTo(-43.83,3);g.lineTo(-60,3);g.closePath();g.fill();g.restore()}});
+  })();
+  bendLeg(C,[[17,-10],[8,-5],[-5,-1.2]],{wb:4.4});
+  flush();(()=>{g.save();g.strokeStyle=C.type==="siamese"?C.ui:C.line;g.lineWidth=IW*1.2;g.lineCap="round";g.lineJoin="round"; // 後腳趾縫(描自參考圖)
+    [[[-55.41,-6.65],[-53.82,-6.39],[-52.38,-6.79]],[[-55.8,-3.63],[-53.82,-3.76],[-51.99,-4.29]]].forEach(([a,b,c])=>{g.beginPath();g.moveTo(a[0],a[1]);g.quadraticCurveTo(2*b[0]-(a[0]+c[0])/2,2*b[1]-(a[1]+c[1])/2,c[0],c[1]);g.stroke()});g.restore()})();
+  blob(C,"paw",{x:-3.5,y:-.6,rx:6.6,ry:5.2,r:.1});toes(-3.5,-.6,.1,6.6,5.2,2);
+  head(C,{x:37.5,y:-17,rx:28,ry:22.5,r:.3,d:.9,eyes:"sleep",mouth:"smile",ef:S.ef});
+ },
+ groom(C,S){ // 洗臉 v7:不擦臉,爪停嘴邊只舔;洗臉臂=單一 C 形弧(三次貝茲,肩根埋進胸、輪廓漸淡無接縫);支撐臂寬、起點低、長、往下到地;靜態小舌(垂直嘴線、爪抬起時被蓋住);爪背朝外畫趾縫線;循環 7.2s=抬爪→舔×4(中間停一拍)→放下。爪為頭部座標(隨頭旋轉),舔時爪輕微上下 bob。REDUCED:爪停臉頰、舌頭照常靜態/無搖擺
+  const R=!!S.R,T=7.2,tc=R?0:(((S.at!=null?S.at:S.t)%T)+T)%T,E=x=>{x=cl01(x);return x*x*x*(x*(6*x-15)+10)},
+    REST=[21,-5],MO=[7,10.5];
+  const lk=(a)=>{const l=(tc-a)/.62;return (l>0&&l<1)?Math.pow(Math.sin(l*Math.PI),.8):0}; // 單次舔 0.62s
+  const tg=R?0:Math.max(lk(1.25),lk(2.0),lk(2.75),lk(4.1)),
+    en2=R?0:tc<.9?E(tc/.9):tc<5.7?1:tc<6.9?1-E((tc-5.7)/1.2):0, // 抬爪/頭低歪向爪
+    wr=1-en2;
+  const bob=R?0:Math.sin(tg*Math.PI)*-.7+tg*.4; // 舔時爪輕輕頂上
+  const ph=Math.sin(tc/T*TAU),dip=R?0:10*en2,near=R?0:en2;
+  const hr=R?.2:.16+.25*en2+.012*ph,hy=-48.5+dip,hx=3+(R?0:3*en2),ca=Math.cos(hr),sa=Math.sin(hr);
+  let px,py;
+  if(R){px=26;py=-43}
+  else{const rx=MO[0]+tg*.5,ry=MO[1]+bob,X=hx+rx*ca-ry*sa,Y=hy+HDY+rx*sa+ry*ca;px=X+(REST[0]-X)*wr;py=Y+(REST[1]-Y)*wr}
+  const limb=(P,w0,w1,o)=>{o=o||{};flush();const N=80,pt=u=>{const v=1-u,a=v*v*v,b=3*v*v*u,c=3*v*u*u,d=u*u*u;return [a*P[0][0]+b*P[1][0]+c*P[2][0]+d*P[3][0],a*P[0][1]+b*P[1][1]+c*P[2][1]+d*P[3][1]]},
+      wd=u=>w0+(w1-w0)*u,us=o.us==null?.3:o.us,pc=fillOf(C,"paw"),sock=pc!==C.base,dot=(q,r)=>{g.moveTo(q[0]+r,q[1]);g.arc(q[0],q[1],r,0,TAU)};
+    g.save();g.beginPath();g.fillStyle=C.line;
+    for(let i=0;i<=N;i++){const u=i/N;if(u<us)continue;const k=cl01((u-us)/.22),e=k*k*(3-2*k);dot(pt(u),wd(u)+OW*e)}g.fill(); // 輪廓:由 us 起漸現(根部無線)
+    g.beginPath();g.fillStyle=C.base;for(let i=0;i<=N;i++)dot(pt(i/N),wd(i/N));g.fill();
+    if(sock&&o.sk){g.beginPath();g.fillStyle=pc;for(let i=0;i<=N;i++){const u=i/N;if(u>=1-o.sk)dot(pt(u),wd(u))}g.fill()}
+    if(o.toes){const e=pt(1),q=pt(.94),ang=Math.atan2(e[1]-q[1],e[0]-q[0]),w=w1;g.translate(e[0],e[1]);g.rotate(ang);g.strokeStyle=C.type==="siamese"?C.ui:C.line;g.lineWidth=IW*1.3;g.lineCap="round"; // 爪背趾縫線(肉球朝內看不到)
+      (o.toes===2?[-.38,.38]:[-.55,0,.55]).forEach(k=>{g.beginPath();g.moveTo(w*.12,k*w*.8);g.quadraticCurveTo(w*.5,k*w*.95,w*.82,k*w*.8+k*w*.18);g.stroke()})}
+    g.restore()};
   tail(C,[20,-8,44,-6,48,-22,40,-34+S.sw],10);
-  body(C,SIT);hindFeet(C,-3.5,22);
-  legP(C,-8,-30,-8,-3,{wb:4});
-  head(C,{x:0,y:-50,rx:26,ry:21.5,r:.1,d:.4,eyes:"sleep",tongue:S.tongue,ef:S.ef});
-  legP(C,9,-26,15,-44,{wb:3.9});
+  body(C,SIT,{rot:.13,dx:-2});hindFeet(C,-3.5,22);
+  limb([[-6,-24],[-14,-17],[-15,-9],[-11,-4.2]],10,8,{us:.4,sk:.36,toes:2}); // 支撐臂:寬、起點低(胸下緣)、長、往下前伸到地
+  head(C,{x:hx,y:hy,rx:26,ry:21.5,r:hr,d:.52,eyes:"happy",mouth:"smile",tongue:true,ef:1.15*near});
+  { // 洗臉臂:根埋進胸 → 單一 C 弧(向外下鼓)→ 爪墊朝嘴
+    const P0=[19,-9],dx=px-P0[0],dy=py-P0[1],L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L,bl=-.4*L;
+    limb([P0,[P0[0]+dx*.3+nx*bl,P0[1]+dy*.3+ny*bl],[P0[0]+dx*.72+nx*bl*.9,P0[1]+dy*.72+ny*bl*.9],[px,py]],8.2,7.8,{us:.5,toes:3,sk:.15})}
  },
 stretch(C,S){ // 參照 Gemini 伸懶腰(play bow):頭身比固定(頭恆為 HRX×HRY),軀幹只做 坐/站→楔形(臀高前低);前臂前伸貼地、後腿折膝縮在臀下;S.sp=0 起點姿勢 … 1 全伸(進出場形變);S.sx=收尾回「站姿」(而非坐姿)
   const sp=S.sp==null?1:S.sp,lp=(p,q,t)=>p+(q-p)*t,eH=ez(cl01(sp/.6)),eF=ez(cl01((sp-.15)/.85)),gH=ez(cl01((sp-.3)/.55)),ST=!!S.sx,ex=S.ex||0; // ex=停留期間再多伸一點(0~1)
@@ -773,9 +833,9 @@ walkS(C,S){ if(S.g&&S.g.gal&&!S.stand&&!S.g.stand&&!S.g.air&&!S.g.sniff&&!S.g.lo
  },
 };
 for(const k in POSE){const f=POSE[k];POSE[k]=(C,S)=>{bodyDone=false;LASTBODY=null;FARC=[];f(C,S);flush();FARC=[]}}
-const POSEH0={knead:76,dig:80,readLie:46,stamp:78,think:78,ball:48,loaf:62,back:78,sprawl:50,groom:78,stretch:92,sitFront:78,mloaf:62,eat:58,play:78,scratch:110,litter:50,walkS:64,walkF:76,walkB:76},POSEH={};for(const k in POSEH0)POSEH[k]=POSEH0[k]+(k==="readLie"||k==="litter"?3:7);
-const POSEW={knead:34,dig:26,readLie:50,stamp:32,think:32,walkS:36,walkF:26,walkB:26};
-const POSE_ORDER=["ball","loaf","back","sprawl","groom","stretch","sitFront","mloaf","eat","play","scratch","litter","knead","dig","readLie","stamp","think"];
+const POSEH0={knead:76,dig:80,readLie:46,stamp:78,think:78,ball:48,loaf:62,back:78,sprawl:50,side:44,groom:78,stretch:92,sitFront:78,mloaf:62,eat:58,play:78,scratch:110,litter:50,walkS:64,walkF:76,walkB:76},POSEH={};for(const k in POSEH0)POSEH[k]=POSEH0[k]+(k==="readLie"||k==="litter"?3:7);
+const POSEW={side:46,knead:34,dig:26,readLie:50,stamp:32,think:32,walkS:36,walkF:26,walkB:26};
+const POSE_ORDER=["ball","loaf","back","side","sprawl","groom","stretch","sitFront","mloaf","eat","play","scratch","litter","knead","dig","readLie","stamp","think"];
 /* ================= 房間(靜態,預先繪製) ================= */
 const FRAME_CX=[85,225,420,845];
 function rr(x,y,w,h,r,fill,stroke,lw){
@@ -1158,7 +1218,7 @@ function doorDraw(d){
   g.fillStyle="rgba(120,70,50,.10)";if(d.v)g.fillRect(d.x,d.y,d.w,d.h*.12);else g.fillRect(d.x,d.y,d.w*.12,d.h);
   g.restore();
 }
-function framesAt(list){list.forEach((cx,i)=>{const k=i%4;
+function framesAt(list,off=0){list.forEach((cx,i)=>{const k=(i+off)%4; // off:各面牆接續編號,四幅圖樣不重複
     rr(cx-24,28,48,42,8,"#fff4dc",LN,2.2);rr(cx-19,33,38,32,5,["#ffe3e8","#e3f4ec","#fff0cf","#e7e2fb"][k]);
     g.save();g.translate(cx,49);g.scale(.8,.8);
     if(k===0){g.fillStyle="#f0a0b0";ellp(0,5,8,6.5);g.fill();[[-9,-4],[-3,-9],[3,-9],[9,-4]].forEach(([x,y])=>{ellp(x,y,3,3.8);g.fill()})}
@@ -1212,7 +1272,7 @@ function bgDraw(){
   BOXES.forEach(([x,y])=>boxBack(x,y));
   PADS.forEach(([x,y])=>keyPad(x,y));
   // ---- D 客廳(中央最大) ----
-  windowAt(640);framesAt([440,510]);
+  windowAt(640);framesAt([440,510],2);
   wallClock(478,140,22,true);
   wallShelf(722,134,178);
   rugDraw(640,548,232,78);
@@ -1333,7 +1393,7 @@ const SLOT={
  sofa:[V({x:SOFA.x-62,y:SOFA.y,face:1},[{x:SOFA.x-SOFA.w/2-24,y:SOFA.y+10},{x:SOFA.x-SOFA.w/2+30,y:SOFA.y+5,j:1,h:24}]),V({x:SOFA.x+62,y:SOFA.y,face:-1},[{x:SOFA.x+SOFA.w/2+24,y:SOFA.y+10},{x:SOFA.x+SOFA.w/2-30,y:SOFA.y+5,j:1,h:24}])],
  bed:[V({x:975,y:774,face:1},[{x:925,y:788}])],
  sill:[V({x:652,y:208,face:1},[{x:652,y:272}],1,56),V({x:1012,y:208,face:1},[{x:1012,y:272}],1,56)],
- bowl:[V({x:990,y:441,face:1},[]),V({x:1141,y:441,face:-1},[{x:1118,y:451}])], // 吃飯:頭正好在碗上方,碗前緣(bowlFront)蓋住下巴
+ bowl:[V({x:997,y:422,face:1},[]),V({x:1134,y:422,face:-1},[{x:1118,y:451}])], // 吃飯:頭壓低在碗正上方(下巴略高於碗緣),碗完整畫在貓後面,不裁切
  post:[V({x:1074,y:598,face:1},[{x:1040,y:574}])],
  tree:[V({x:1074,y:300,face:1},[{x:1095,y:364}],1,56),V({x:1140,y:246,face:1},[{x:1095,y:364}],1,90)],
  litter:[V({x:1140,y:820,face:1},[{x:1140,y:774}],1,18),V({x:1195,y:738,face:-1},[])],
@@ -1442,69 +1502,110 @@ function freeSlot(kind,c){const l=SLOT[kind].filter(s=>!s.occ||s.occ===c);return
 function take(kind,c){const sl=freeSlot(kind,c);if(sl)claim(c,sl);return sl} // 規劃時就占位,避免兩隻貓同時挑到同一格
 const G=(sl,status,run)=>({type:"goto",slot:sl,status,run});
 const P_=(pose,o)=>Object.assign({type:"play",pose,t:0},o);
-const IDLE_ZONES=[["sofa",3],["bed",3],["study",3],["box",2],["tree",2],["sill",2],["rug",2],["bowl",1],["post",1],["spot",1],["pouf",1]]; // 偏向睡覺的地方
-const LZ=DEMO?.3:1,LD=(a,b,min)=>Math.max(min||5,rnd(a,b)*LZ); // 貓很懶:閒置停留時間(真實模式)睡 60~180s、發呆/看窗 30~90s、理毛 15~30s、玩/吃/磨爪 10~20s;?demo=1 縮成 0.3 倍(最短 5s)維持熱鬧
-const REST_OK=new Set(["sofa","bed","sill","tree","rug","study","pouf","spot"]);
-/* 原地賴著的動作鏈:依位置挑合理的姿勢,慢慢轉換(坐起→翻肚→再坐起→蜷回去 / 伸懶腰→站定→再躺下 / 理毛 / 張望) */
-function inPlace(z){
-  const q=[],Z=(pose,st,lo,hi,o)=>q.push(P_(pose,Object.assign({status:st,dur:LD(lo,hi)},o||{}))),
-    sit=(st,lo,hi,o)=>Z("sitFront",st||"待命・坐起來",lo||3,hi||5,o),
-    stretchSeq=()=>{q.push(P_("stretch",{status:"待命・伸懶腰",dur:4.4,exit:"stand"}));q.push(P_("walkS",{status:"待命・站定",dur:1.3,stand:true}))},
-    sleepy=z==="sofa"||z==="bed",high=z==="sill"||z==="tree";
-  const r=Math.random();
-  if(sleepy){
-    if(r<.3){Z("ball","待命・換個睡姿",40,120,{zzz:true});Z("loaf","待命・趴著瞇眼",30,90,{zzz:true});Z("ball","待命・蜷起來睡",40,120,{zzz:true})}
-    else if(r<.55&&z==="sofa"){sit("待命・坐起來",3,5);Z("sprawl","待命・翻肚皮睡",40,120,{zzz:true});sit("待命・翻回來",3,5);Z("ball","待命・蜷起來睡",40,120,{zzz:true})}
-    else if(r<.75){stretchSeq();sit("待命・張望一下",8,20,{look:true});Z("ball","待命・再躺回去睡",60,150,{zzz:true})}
-    else if(r<.9){sit("待命・坐起來理毛",3,5);Z("groom","待命・理毛中",15,30,{tongue:true});Z("ball","待命・理完繼續睡",60,150,{zzz:true})}
-    else{Z("loaf","待命・趴著發呆",30,90);Z("ball","待命・睡回去",60,150,{zzz:true})}
-  }else if(high){
-    if(r<.35){Z("loaf","待命・趴著看風景",30,90,{look:true});Z("back","待命・坐著看窗外",30,90,{look:true})}
-    else if(r<.6){sit("待命・轉過來",3,5);Z("groom","待命・理毛中",15,30,{tongue:true});Z("loaf","待命・趴下",30,90)}
-    else if(r<.8){Z("back","待命・看窗外",30,90,{look:true});sit("待命・轉頭張望",8,20,{look:true});Z("loaf","待命・趴回去",30,90)}
-    else{stretchSeq();Z("loaf","待命・伸完趴下",30,90)}
-  }else{ // rug / study / pouf / spot
-    if(r<.25){Z("groom","待命・理毛中",15,30,{tongue:true});Z("loaf","待命・理完趴著",30,90)}
-    else if(r<.5){stretchSeq();Z("loaf","待命・伸完趴下",30,90);Z("ball","待命・蜷起來打盹",60,150,{zzz:true})}
-    else if(r<.7){sit("待命・坐起來",3,5);Z("sprawl","待命・翻肚皮",30,90,{zzz:true});sit("待命・翻回來",3,5);Z("loaf","待命・趴著",30,90)}
-    else if(r<.85){sit("待命・發呆張望",10,30,{look:true});Z("loaf","待命・趴下",30,90);Z("ball","待命・打盹",60,150,{zzz:true})}
-    else{Z("ball","待命・蜷起來打盹",60,150,{zzz:true});sit("待命・醒來伸脖子",3,6,{look:true});Z("groom","待命・理毛中",15,30,{tongue:true})}
-  }
-  return q;
+/* ================= 閒置行為規劃(依 docs/cat-behavior-timing.md §4.2/§4.3) =================
+   選擇權重(%):ball28 loaf20 sit15 側躺13 理毛8 走4 進食1.5 踏踏1.5 抓1 砂盆.5 玩.5;伸展4/翻肚3/跑.3 不直接抽,由轉場規則產生:
+   睡姿→醒來(sit/理毛/走…)時 35~50% 先坐起(+哈欠)再伸懶腰;翻肚只從側躺進、回側躺;跑只是「走」之後的步態(走→跑 7%、玩後 35%),跑完只回 sit/loaf;
+   連續動作類 ≤2;姿勢互換交叉淡化 ≥1.25s。位置感:eat 只在碗、scratch 只在抓板、litter 只在砂盆、play 在地毯;
+   側躺/翻肚只在軟的地方(沙發/床/地毯/書房/坐墊),窗台與跳台只 sit/loaf/ball/理毛。 */
+const LZ=DEMO?.3:1,LD=(a,b,min)=>Math.max(min||5,rnd(a,b)*LZ); // 停留秒數(真實模式照表;?demo=1 縮成 0.3 倍,最短 min)
+const IDLE_ZONES=[["sofa",3],["bed",3],["study",3],["box",2],["tree",2],["sill",2],["rug",2],["spot",1],["pouf",1]]; // 閒晃目的地(睡覺的地方佔多數)
+const REST_OK=new Set(["sofa","bed","sill","tree","rug","study","pouf","spot","box"]);
+const PLACE_ZONE={eat:"bowl",scratch:"post",litter:"litter",play:"rug"};
+const SOFTZ=["ball","loaf","sit","side","groom","knead"];
+const ZALLOW={sofa:SOFTZ,bed:SOFTZ,rug:SOFTZ.concat("play"),study:["ball","loaf","sit","side","groom"],pouf:["sit","loaf","ball","groom","knead"],spot:["sit","loaf","ball","groom","knead"],
+  sill:["sit","loaf","ball","groom"],tree:["sit","loaf","ball","groom"],box:["ball","loaf"],bowl:["groom","sit"],post:["groom","sit"],litter:[]};
+const IDLE_T={ball:28,loaf:20,sit:15,side:13,groom:8,walk:4,eat:1.5,knead:1.5,scratch:1,litter:.5,play:.5}; // 表列目標權重(stretch/sprawl/run 另計)
+const H_={ball:[40,90],loaf:[25,70],sit:[15,50],side:[30,80],sprawl:[6,15],groom:[8,25],eat:[10,25],litter:[15,40],scratch:[5,12],knead:[8,20],play:[6,15],stretch:[4.4,6]};
+const STATIC=new Set(["ball","loaf","sit","side"]),LYING=new Set(["ball","side","loaf"]);
+const OVR={ // 轉場表(表 §4.3);沒列的前一姿勢用基礎權重
+  stretch:{groom:30,sit:35,walk:20,scratch:10,loaf:5},
+  groom:{sit:30,loaf:20,ball:30,side:20},
+  eat:{groom:40,ball:20,side:10,loaf:15,sit:15},
+  litter:{groom:30,sit:40,loaf:20,ball:10},
+  scratch:{sit:40,groom:25,loaf:20,ball:15},
+  knead:{ball:50,side:30,loaf:20},
+  play:{sit:40,loaf:30,groom:20,ball:10}};
+const IDLE_CAL=window.__CAL||{ball:2.2,side:2.1,knead:3,groom:.85,sit:.9}; // 模擬校正:睡姿常被轉場表(理毛/進食/走後多接 sit)稀釋,knead 受「只從側躺/loaf 進」限制,乘係數把整體選擇比例拉回表值
+const ARRIVE={sit:38,loaf:28,ball:20,side:14}; // 走完抵達後的姿勢
+const IDLE_WB=(()=>{ // 「不連續重複同一姿勢」(抽到同樣就重抽)會偏移穩態比例:w'=k·t/(1+k·t) 還原成表列比例
+  const ks=Object.keys(IDLE_T),tot=ks.reduce((a,k)=>a+IDLE_T[k],0),t=ks.map(k=>IDLE_T[k]/tot);
+  let lo=0,hi=1e4;for(let i=0;i<80;i++){const k=(lo+hi)/2,s=t.reduce((a,x)=>a+k*x/(1+k*x),0);s>1?hi=k:lo=k}
+  const o={};ks.forEach((k,i)=>o[k]=lo*t[i]/(1+lo*t[i]));return o})();
+const hourNow=()=>{if(window.__SIM&&window.__SIM.hour)return window.__SIM.hour();const d=new Date();return d.getHours()+d.getMinutes()/60};
+function todMul(p){
+  if(window.__SIM&&window.__SIM.flat)return 1; // 晨昏(07-09、17-19)活躍類 ×1.7、睡姿 ×.7;其他時段 ×.85 / ×1.1
+  const h=hourNow(),dd=(h>=7&&h<9)||(h>=17&&h<19),A=p==="groom"||p==="walk"||p==="eat"||p==="scratch"||p==="play"||p==="litter",S=p==="ball"||p==="side";
+  return A?(dd?1.7:.85):S?(dd?.7:1.1):1}
+function zoneOf(c){if(!c.slot)return null;for(const k in SLOT)if(SLOT[k].indexOf(c.slot)>=0)return k;return null}
+function pickW(w){let tot=0;for(const k in w)tot+=w[k];let r=Math.random()*tot;for(const k in w){if((r-=w[k])<0)return k}return Object.keys(w)[0]}
+const hold=p=>LD(H_[p][0],H_[p][1],Math.min(H_[p][0],5));
+const poseLabel=p=>({ball:"ball",dig:"ball",loaf:"loaf",mloaf:"loaf",readLie:"loaf",sitFront:"sit",back:"sit",sprawl:"side",side:"side",groom:"groom"}[p]||"sit");
+function nextPose(IP,z){
+  const prev=IP.prev,boost=DEMO?5:1;let w;
+  if(OVR[prev])w=Object.assign({},OVR[prev]);
+  else{w=Object.assign({},IDLE_WB);if(prev!=="side"&&prev!=="loaf")delete w.knead;delete w[prev];
+    for(const k in w){w[k]*=todMul(k)*(IDLE_CAL[k]||1);if(k==="walk"||k in PLACE_ZONE)w[k]*=boost}}
+  if(IP.acts>=2)for(const k in w)if(!STATIC.has(k))delete w[k]; // 動作類最多連續 2 次
+  if(z&&REST_OK.has(z))for(const k in w)if(k!=="walk"&&!(k in PLACE_ZONE)&&ZALLOW[z].indexOf(k)<0)delete w[k]; // 休息區:放不下的姿勢不抽
+  if(!Object.keys(w).length)w={sit:1};
+  return pickW(w);
 }
+function pickZone(c,ok,not){
+  const cand=IDLE_ZONES.filter(([k])=>k!==not&&ok(k)&&SLOT[k].some(s=>!s.occ||s.occ===c));
+  if(!cand.length)return null;let r=Math.random()*cand.reduce((a,x)=>a+x[1],0);for(const [k,w] of cand){if((r-=w)<0)return k}return cand[0][0]}
 function idlePlan(c){
-  const q=[];
-  if(c.inSlot&&c.lastZone&&REST_OK.has(c.lastZone)&&Math.random()<(DEMO?.25:.7))return inPlace(c.lastZone); // 做完一件事後 ~70% 原地繼續賴著(demo 25%),不走去別處
-  let tot=IDLE_ZONES.reduce((a,z)=>a+z[1],0),r=Math.random()*tot,zone="rug";
-  for(const [z,w] of IDLE_ZONES){if((r-=w)<0){zone=z;break}}
-  if(zone===c.lastZone)zone="rug";c.lastZone=zone;
-  if(zone==="rug"){
-    const rs=freeSlot("rug",c);if(rs){rs.face=Math.random()<.5?1:-1;q.push(G(rs,"閒晃中"))}
-    const k=pick(["groom","stretch","note","play","loaf","groom","loaf"]);
-    if(k==="groom")q.push(P_("groom",{status:"待命・理毛中",dur:LD(15,30),tongue:true}));
-    else if(k==="stretch"){q.push(P_("stretch",{status:"待命・伸懶腰",dur:4.4,exit:"stand"}));q.push(P_("walkS",{status:"待命・站定",dur:1.3,stand:true}));q.push(P_("sitFront",{status:"待命・發呆",dur:LD(15,40)}))}
-    else if(k==="note")q.push(P_("sitFront",{status:"待命・哼歌",dur:LD(10,20),note:true,happy:true}));
-    else if(k==="play")q.push(P_("play",{status:"待命・玩毛線球",dur:LD(10,20)}));
-    else q.push(P_("loaf",{status:"待命・趴著發呆",dur:LD(30,90)}));
-    return q;
+  const IP=c.ip||(c.ip={prev:null,acts:0}),q=[];
+  let z=c.inSlot?zoneOf(c):null;
+  if(IP.prev==null){IP.prev=poseLabel(c.pose);IP.acts=0}
+  const known=!!z&&(REST_OK.has(z)||z==="bowl"||z==="post"||z==="litter");
+  let nx=known?nextPose(IP,z):"walk";
+  // --- 睡醒先伸懶腰(+哈欠):睡姿→醒來類(sit/理毛/走/辦事)35~50% ---
+  if(LYING.has(IP.prev)&&known&&REST_OK.has(z)&&nx!=="ball"&&nx!=="side"&&nx!=="loaf"){
+    if(IP.acts<2&&Math.random()<(IP.prev==="loaf"?.08:.35)){
+      q.push(P_("sitFront",{status:"待命・醒來坐起",dur:LD(2.6,4,2.6),look:true,lab:"wake",yawn:Math.random()<.55,yd:.4}));
+      q.push(P_("stretch",{status:"待命・伸懶腰",dur:rnd(H_.stretch[0],H_.stretch[1]),exit:"stand",lab:"stretch",yawn:Math.random()<.3,yd:1.7}));
+      q.push(P_("walkS",{status:"待命・站定",dur:1.3,stand:true,lab:"stretch"}));
+      IP.prev="stretch";IP.acts++;nx=nextPose(IP,z)}}
+  // --- 位置:不在對的地方就走過去(走是動作類;跑只當「走」之後的步態,跑完回 sit/loaf) ---
+  let tz=z,run=false;const nx0=nx;
+  const pz=PLACE_ZONE[nx];let atRight;
+  if(nx==="walk")atRight=false;else if(pz)atRight=z===pz;else if(!known)atRight=false;else if(REST_OK.has(z))atRight=true;else atRight=ZALLOW[z].indexOf(nx)>=0; // 休息區的姿勢已在 nextPose 過濾過
+  if(!atRight){
+    let dz=pz||null;
+    if(nx==="walk")dz=pickZone(c,k=>true,z);
+    else if(!pz)dz=pickZone(c,k=>ZALLOW[k].indexOf(nx)>=0,z)||pickZone(c,k=>true,z);
+    const sl=dz&&take(dz,c);
+    if(sl){
+      tz=dz;
+      if(nx==="walk"){run=Math.random()<(IP.prev==="play"?.35:.07);
+        const w={};for(const k in ARRIVE)if(ZALLOW[dz].indexOf(k)>=0&&(!run||k==="sit"||k==="loaf"))w[k]=ARRIVE[k];
+        nx=Object.keys(w).length?pickW(w):"sit"}
+      const g0=G(sl,"閒晃中");g0.rp=run?1:0;g0.dec=nx0==="walk";g0.lab=run?"run":"walk";q.push(g0);
+    }else if(nx==="walk"||!(z&&ZALLOW[z]&&ZALLOW[z].indexOf(nx)>=0))nx="sit"; // 找不到位子:就地坐下
   }
-  const kind=zone;const sl=freeSlot(kind,c);if(!sl)return idlePlan(c);
-  q.push(G(sl,"閒晃中"));
-  if(zone==="sofa")q.push(P_(pick(["ball","sprawl","loaf"]),{status:"待命・沙發上睡覺",dur:LD(60,180),zzz:true}));
-  else if(zone==="bed")q.push(P_("ball",{status:"待命・睡覺中",dur:LD(60,180),zzz:true}));
-  else if(zone==="sill"){q.push(P_("back",{status:"待命・看窗外",dur:LD(30,90),look:true}))}
-  else if(zone==="tree"){q.push(P_(pick(["back","loaf","ball"]),{status:"待命・跳台高處",dur:LD(30,90),zzz:false,look:true}))}
-  else if(zone==="bowl")q.push(P_("eat",{status:"待命・吃飯中",dur:LD(10,20)}));
-  else if(zone==="post")q.push(P_("scratch",{status:"待命・磨爪中",dur:LD(10,20)}));
-  else if(zone==="box")q.push(P_("dig",{status:"待命・窩在紙箱裡",dur:LD(60,120),calm:true,zzz:true}));
-  else if(zone==="study"){const k=pick(["readLie","loaf","ball","groom","sitFront","readLie"]);
-    if(k==="readLie")q.push(P_("readLie",{status:"待命・書房趴著看書",dur:LD(30,90)}));
-    else if(k==="loaf")q.push(P_("loaf",{status:"待命・書房趴著發呆",dur:LD(30,90)}));
-    else if(k==="ball")q.push(P_("ball",{status:"待命・書房地毯上打盹",dur:LD(60,180),zzz:true}));
-    else if(k==="groom")q.push(P_("groom",{status:"待命・書房理毛中",dur:LD(15,30),tongue:true}));
-    else q.push(P_("sitFront",{status:"待命・看書架發呆",dur:LD(30,60),look:true}))}
-  else if(zone==="pouf")q.push(P_(pick(["groom","sitFront"]),{status:"待命・坐在軟墊上",dur:LD(20,40),tongue:true}));
-  else q.push(P_(pick(["loaf","sitFront"]),{status:"待命・坐著發呆",dur:LD(30,60)}));
+  // --- 這個姿勢本身 ---
+  const zz=tz||z,nearWin=zz==="sill"||zz==="tree",ya=Math.random()<(DEMO?.15:.04);
+  switch(nx){
+    case "ball":q.push(zz==="box"?P_("dig",{status:"待命・窩在紙箱裡",dur:hold("ball"),calm:true,zzz:true,lab:"ball"}):P_("ball",{status:"待命・蜷起來睡",dur:hold("ball"),zzz:true}));break;
+    case "loaf":if(zz==="box")q.push(P_("dig",{status:"待命・窩在紙箱裡",dur:hold("loaf"),calm:true,lab:"loaf"}));
+      else if(zz==="study"&&Math.random()<.4)q.push(P_("readLie",{status:"待命・書房趴著看書",dur:hold("loaf"),lab:"loaf"}));
+      else q.push(P_("loaf",{status:nearWin?"待命・趴著看風景":"待命・趴著發呆",dur:hold("loaf"),look:nearWin,yawn:ya,yd:1.5}));break;
+    case "sit":if(nearWin)q.push(P_("back",{status:"待命・看窗外",dur:hold("sit"),look:true}));
+      else q.push(P_("sitFront",{status:"待命・坐著發呆",dur:hold("sit"),look:Math.random()<.5,yawn:ya,yd:1.5}));break;
+    case "side":
+      q.push(P_("side",{status:"待命・側躺睡",dur:hold("side"),zzz:true}));
+      if(Math.random()<.3){ // 翻肚只從側躺進、回側躺
+        q.push(P_("sprawl",{status:"待命・翻肚皮",dur:hold("sprawl"),zzz:true,ss:true,lab:"sprawl"}));
+        q.push(P_("side",{status:"待命・翻回側躺",dur:LD(10,30,5),zzz:true,ss:true,lab:"side"}))}
+      break;
+    case "groom":q.push(P_("groom",{status:"待命・理毛中",dur:hold("groom"),tongue:true}));break;
+    case "eat":q.push(P_("eat",{status:"待命・吃飯中",dur:hold("eat")}));break;
+    case "scratch":q.push(P_("scratch",{status:"待命・磨爪中",dur:hold("scratch")}));break;
+    case "litter":q.push(P_("litter",{status:"待命・上廁所",dur:hold("litter")}));break;
+    case "knead":q.push(P_("knead",{status:"待命・踩踩",dur:hold("knead")}));break;
+    case "play":q.push(P_("play",{status:"待命・玩毛線球",dur:hold("play")}));break;
+    default:nx="sit";q.push(P_("sitFront",{status:"待命・發呆",dur:hold("sit")}))}
+  IP.prev=nx;if(STATIC.has(nx))IP.acts=0;else IP.acts++;
   return q;
 }
 const TOOLK={type:"typec",search:"box",read:"book",write:"wtab"};
@@ -1540,25 +1641,27 @@ function setState(id,mode,opt){
   const c=byId[id];if(!c)return;const key=mode+JSON.stringify(opt||{});if(c.key===key)return;
   c.key=key;c.mode=mode;c.opt=opt||{};
   if(mode==="error"&&c.act&&c.act.type==="goto"&&c.inSlot!==c.slot)claim(c,null); // 走到一半出錯:原地停下,釋放還沒到的目標格
-  c.q=planFor(c)||[];c.act=null;c.over=null;c.lastZone=null;c.gait=null;c.hz=0;c.sq=[1,1];
+  c.q=planFor(c)||[];c.ip=null;c.act=null;c.over=null;c.lastZone=null;c.gait=null;c.hz=0;c.sq=[1,1];
   c.settled=false; // reduced 模式:狀態改變後要重新定位/更新狀態字,否則卡在舊狀態
 }
 /* ---------- 模擬 ---------- */
 function startAct(c,a){
   c.act=a;a.t=0;
+  if(window.__SIM&&c.mode==="idle")SIMREC(c,a);
   if(a.type==="goto"){
     if(a.slot.occ&&a.slot.occ!==c){const alt=freeSlot("rug",c);if(!alt){c.act=null;return}a.slot=alt} // 目標被占:改去地毯空格,絕不搶位
     claim(c,a.slot);c.status=a.status;c.over=null;c.hz=0;c.sq=[1,1];
     const sl=a.slot;
     if(REDUCED){c.x=sl.x;c.y=sl.y;c.face=sl.face;c.inSlot=sl;c.act=null;return}
-    a.run=Math.random()<(c.mode==="error"?.2:Math.hypot(sl.x-c.x,sl.y-c.y)>480?.18:.12); // 貓會省力:幾乎都走路,只有約 12%(出錯 20%、長途 18%)的行程小跑;整體 ≲20%
+    a.run=a.rp!=null?!!a.rp:Math.random()<(c.mode==="error"?.2:Math.hypot(sl.x-c.x,sl.y-c.y)>480?.18:.12); // 貓會省力:幾乎都走路,只有約 12%(出錯 20%、長途 18%)的行程小跑;整體 ≲20%
+    (window.__GL=window.__GL||[]).push({m:c.mode,run:a.run});
     const R=buildRoute(c,sl,a.run);a.segs=R.segs;a.nexit=R.nexit;a.i=0;a.d=0;a.started=false;a.since=0;a.pt=0;a.jt=0;
     c.spd=rnd(.93,1.07);
     if(!a.segs.length){c.x=sl.x;c.y=sl.y;c.face=sl.face;c.inSlot=sl;c.act=null;return}
     c.gait=Object.assign({stand:false,air:false,sniff:false,look:false},a.run?GALLOP:AMB);
     c.over=null;
   }else{
-    c.gait=a.stand?Object.assign({stand:true,air:false,sniff:false,look:false},AMB,{stand:true}):null;c.pose=a.pose;c.pt=0;c.over=a.over||null;c.status=a.status||c.status;c.pop=REDUCED?0:1;
+    c.gait=a.stand?Object.assign({stand:true,air:false,sniff:false,look:false},AMB,{stand:true}):null;c.pose=a.pose;c.pt=0;c._ss=!!a.ss;a._y=0;c.over=a.over||null;c.status=a.status||c.status;c.pop=REDUCED?0:1;
     c.face=(a.toward&&c.slot)?c.slot.face:(c.slot?c.slot.face:c.face);
     if(a.pose==="litter"||a.pose==="back"||a.pose==="mloaf"||a.pose==="scratch")c.face=c.slot?c.slot.face:1;
   }
@@ -1605,13 +1708,17 @@ function gotoStep(c,a,dt){
   if(a.d>=e.len-1e-6){a.i++;a.started=false;a.d=0}
 }
 function update(c,dt){
-  c.t+=dt;if(c.mode==="idle"){}
+  c.t+=dt;if(window.__SIM&&c.mode==="idle"&&c.act)SIMT(c,dt);if(c.mode==="idle"){const S0=window.__ST=window.__ST||{m:0,s:0};S0.m+=dt;if(!c.act||c.act.type!=="goto")S0.s+=dt}
   if(c.tr&&(c.tr.t+=dt)>=c.tr.dur)c.tr=null;
   if(!REDUCED){
-    if(c.blinkT>=0&&(c.blinkT+=dt)>.24)c.blinkT=-1; // 閉 80ms / 停 40ms / 開 120ms
-    if((c.bt-=dt)<0){c.blinkT=0;c.bt=rnd(3,6)}
+    if(c.blinkT>=0&&(c.blinkT+=dt*(c.sb?.28:1))>.24){c.blinkT=-1;c.sb=false} // 閉 80ms / 停 40ms / 開 120ms;慢眨眼(c.sb)=同一條曲線拉長 ~3.5 倍(約 0.85s)
+    if((c.bt-=dt)<0){c.blinkT=0;c.bt=rnd(3,6);c.sb=c.mode==="idle"&&(c.pose==="loaf"||c.pose==="sitFront"||c.pose==="mloaf")&&Math.random()<.25} // 放鬆時偶爾慢眨眼(貓的「我愛你」)
+    if(c.ya>=0&&(c.ya+=dt)>3.2)c.ya=-1;
     if(c.tw>=0&&(c.tw+=dt)>.8)c.tw=-1;
-    if((c.tt-=dt)<0){c.tw=0;c.tt=rnd(3,6)}
+    if((c.tt-=dt)<0){ // 閒置:只在清醒休息姿勢(loaf/坐/看窗/側躺)每 6~15 秒甩一次耳/尾;其他狀態維持原頻率(3~6s)
+      if(c.mode!=="idle"){c.tw=0;c.tt=rnd(3,6)}
+      else if(c.pose==="loaf"||c.pose==="sitFront"||c.pose==="mloaf"||c.pose==="back"||c.pose==="side"){c.tw=0;c.tt=rnd(6,15)}
+      else c.tt=rnd(2,5)}
     if(c.ef>0)c.ef-=dt;
     if((c.et-=dt)<0){c.ef=.24;c.et=rnd(4,9)}
     if(c.pop>0)c.pop=Math.max(0,c.pop-dt/.15);
@@ -1629,6 +1736,7 @@ function update(c,dt){
   if(a.type==="goto"){gotoStep(c,a,dt)
   }else{
     a.t+=dt;c.pt=a.t;
+    if(a.yawn&&!a._y&&a.t>=(a.yd||.5)&&!REDUCED){a._y=1;c.ya=0}
     c.hz=(a.hop&&a.t<a.hop&&!REDUCED)?Math.abs(Math.sin(a.t*Math.PI/.52))*9*CS:0;
     c.sq=[1,1];
     if(a.t>=a.dur){c.act=null;c.hz=0}
@@ -1640,7 +1748,7 @@ function poseTrans(c){ // 坐/趴 ↔ 走:約 200ms 的真實中間姿勢(抬胸
   if(c.pose===c.lp)return;
   if(!REDUCED){
     const W=p=>p==="walkS"||p==="walkF"||p==="walkB",K=(c.act&&c.act.puff)?1:2.5,DU=.216*K; // 姿勢轉換慢 2.5 倍(貓不趕時間);炸毛(error)維持原速
-    const MS=p=>p==="walkS"||p==="walkF",TD=p=>(p==="walkF"?.233:.4)*K,SM2=p=>p==="stretch"||p==="sprawl";
+    const MS=p=>p==="walkS"||p==="walkF",TD=p=>(p==="walkF"?.233:.4)*K,SM2=p=>p==="stretch"||(p==="sprawl"&&!c._ss);
     if(MS(c.pose)&&TSRC[c.lp]){c.wph=.56;c.tr={src:c.lp,t:0,dur:TD(c.pose),up:true,pz:c.pose}}
     else if(MS(c.lp)&&TSRC[c.pose]&&c.lgt&&!c.gait){c.tr={src:c.pose,t:0,dur:TD(c.lp),up:false,gt:c.lgt,wph:c.lwph,pz:c.lp}}
     else if(W(c.pose)&&!W(c.lp)&&POSE[c.lp]&&c.lp!=="stretch"){c.wph=.56;c.tr={xf:1,from:c.lp,to:c.pose,t:0,dur:DU,up:true}}
@@ -1651,20 +1759,13 @@ function poseTrans(c){ // 坐/趴 ↔ 走:約 200ms 的真實中間姿勢(抬胸
 }
 /* ---------- 繪製 ---------- */
 let bgc=null;
-function bowlFront(){ // 碗前半(畫在貓之後):下巴埋進碗裡的遮擋
-  g.save();g.translate(500,63);scl(565,382,K_BOWL,()=>{
-    [[535,"#c78552"],[595,"#8cc6ec"]].forEach(([x,c])=>{
-      g.save();g.beginPath();g.rect(x-30,364,60,40);g.clip();
-      g.beginPath();g.moveTo(x-20,364);g.lineTo(x+20,364);g.quadraticCurveTo(x+18,382,x,382);g.quadraticCurveTo(x-18,382,x-20,364);g.fillStyle="#fff6e8";g.fill();g.lineWidth=2.2;g.strokeStyle=LN;g.stroke();
-      g.beginPath();g.ellipse(x,364,20,7,0,0,Math.PI);g.stroke();
-      g.fillStyle="rgba(255,255,255,.45)";ellp(x-5,364,4,1.4);g.fill();pawPrint(x,373,"#f0a0b0",.9);g.restore()})});
-  g.restore();
-}
-const FRONTS=[{y:446,fn:bowlFront},{y:SOFA.y+1,fn:sofaFront},{y:690,fn:bedFront},{y:658,fn:litterFront},...BOXES.map(([x,y],i)=>({y:y+2,fn:()=>boxFront(x,y,false)}))];
+const FRONTS=[{y:SOFA.y+1,fn:sofaFront},{y:690,fn:bedFront},{y:658,fn:litterFront},...BOXES.map(([x,y],i)=>({y:y+2,fn:()=>boxFront(x,y,false)}))];
 const blinkOpen=u=>u<.08?1-u/.08:u<.12?0:Math.min(1,(u-.12)/.12);
+const bOpen=c=>{if(!c.sb)return blinkOpen(c.blinkT);const u=c.blinkT/.24;return u<.3?1-ez(u/.3):u<.62?0:ez((u-.62)/.38)}; // 慢眨眼:慢慢閉、停一下、慢慢睜
+const yawnEnv=s=>{const u=s/3.2;return u<.25?ez(u/.25):u<.68?1:ez(cl01((1-u)/.32))}; // 哈欠:0.8s 張開 → 停 ~1.4s → 1s 閉
 function mkS(c,t){
   const a=(c.act&&c.act.type==="play")?c.act:{};const R=REDUCED;
-  const S={t,sw:R?0:Math.sin(t*1.7+c.ph)*3.5*(a.puff?.3:1),blink:!R&&c.blinkT>=0&&blinkOpen(c.blinkT)<.3,ef:(!R&&c.ef>0)?-.4*Math.sin(Math.min(1,c.ef/.24)*Math.PI):0,
+  const S={t,at:a.t,ph:c.ph,sw:R?0:Math.sin(t*1.7+c.ph)*3.5*(a.puff?.3:1),blink:!R&&c.blinkT>=0&&bOpen(c)<.3,ef:(!R&&c.ef>0)?-.4*Math.sin(Math.min(1,c.ef/.24)*Math.PI):0,
     happy:!!a.happy,puff:!!a.puff,tongue:!R&&!!a.tongue&&Math.sin(t*2.4)>.3,tilt:a.tilt||0,nod:0,look:0,bob:0,bat:0,ball:0,arm:0,d:0,awake:false,g:c.gait,wp:((c.wph%1)+1)%1,stand:false,R,wide:!!a.wide,calm:!!a.calm};Object.assign(S,exprOf(c.pose,c.coat));
   if(!R){
     if(c.pose==="eat")S.bob=Math.sin(t*7)*2.5;
@@ -1674,8 +1775,8 @@ function mkS(c,t){
     if(a.look)S.look=Math.sin(t*.7+c.ph)*.1;
     if(a.tap)S.nod=Math.sin(t*14)>0?-1.2:0;
   }
-  if((c.pose==="stretch"||c.pose==="sprawl")&&c.act&&c.act.type==="play"&&!REDUCED){const ta=c.act.t,du=c.act.dur,sm=t=>{t=cl01(t);return t*t*t*(t*(6*t-15)+10)},ti=c.pose==="stretch"?[1.3,1.2]:[1.2,1.2];S.sp=Math.min(sm(ta/ti[0]),sm((du-ta)/ti[1]));if(c.pose==="stretch"){const h0=ti[0],h1=du-ti[1];S.ex=(ta>h0&&ta<h1)?Math.sin(Math.PI*(ta-h0)/Math.max(.1,h1-h0)):0}S.sx=c.pose==="stretch"&&c.act.exit==="stand"&&ta>du*.5}
-  if((c.pose==="stretch"||c.pose==="sprawl")&&!c.act&&!REDUCED){S.sp=0;S.sx=!!c._sx} // 動作之間的空檔格:維持收尾姿勢,不閃回全伸
+  if((c.pose==="stretch"||(c.pose==="sprawl"&&!c._ss))&&c.act&&c.act.type==="play"&&!REDUCED){const ta=c.act.t,du=c.act.dur,sm=t=>{t=cl01(t);return t*t*t*(t*(6*t-15)+10)},ti=c.pose==="stretch"?[1.3,1.2]:[1.2,1.2];S.sp=Math.min(sm(ta/ti[0]),sm((du-ta)/ti[1]));if(c.pose==="stretch"){const h0=ti[0],h1=du-ti[1];S.ex=(ta>h0&&ta<h1)?Math.sin(Math.PI*(ta-h0)/Math.max(.1,h1-h0)):0}S.sx=c.pose==="stretch"&&c.act.exit==="stand"&&ta>du*.5}
+  if((c.pose==="stretch"||(c.pose==="sprawl"&&!c._ss))&&!c.act&&!REDUCED){S.sp=0;S.sx=!!c._sx} // 動作之間的空檔格:維持收尾姿勢,不閃回全伸
   if(c.pose==="stretch"&&c.act&&c.act.type==="play")c._sx=!!S.sx;
   if(c.act&&c.act.type==="goto"&&!c.gait)S.d=0;
   if(a.toward)S.d=.5;
@@ -1689,12 +1790,12 @@ function drawCat(c){
   const C=COATS[c.coat],t=c.t,S=mkS(c,t),a=(c.act&&c.act.type==="play")?c.act:{};
   const h=c.hz;
   // 影子
-  sh(c.x,c.y,(c.pose==="litter"?0:(POSEW[c.pose]||30))*1.15*CS*(1-Math.min(.4,h/70)),8*CS*(1-Math.min(.4,h/70)),(c.coat==="siamese"||c.coat==="calico")?.34:.22);
+  sh(c.x,c.y,(c.pose==="litter"?0:(POSEW[c.pose]||30))*(c.pose==="sprawl"&&S.sp!=null?1+.55*ez(cl01(S.sp)):1)*1.15*CS*(1-Math.min(.4,h/70)),8*CS*(1-Math.min(.4,h/70)),(c.coat==="siamese"||c.coat==="calico")?.34:.22);
   if(SEL===c.id){g.save();ellp(c.x,c.y,Math.max(24,38*CS),Math.max(7,10*CS));g.lineWidth=3;g.strokeStyle="#ff7f4a";g.setLineDash([6,5]);g.stroke();g.restore()}
   g.save();g.translate(c.x+(a.shake&&a.t<a.shake&&!REDUCED?Math.sin(a.t*70)*1.6:0),c.y-h);
   const bw=TAU/c.bp,br=REDUCED?0:Math.sin(t*bw+c.ph),pp=c.pop;
   HDY=REDUCED?0:(Math.sin((t-.125)*bw+c.ph)-br)*28*.013; // 頭部比胸腔慢 ~0.125s
-  BO=(!REDUCED&&c.blinkT>=0)?blinkOpen(c.blinkT):1;
+  BO=(!REDUCED&&c.blinkT>=0)?bOpen(c):1;YA=(!REDUCED&&c.ya>=0)?yawnEnv(c.ya):0;
   TWA=(!REDUCED&&c.tw>=0)?.52*twA(c.tw):0;
   const sx=c.sq[0]*(1+.04*pp*Math.max(0,pp))*(1-.006*br),sy=c.sq[1]*(1-.03*pp)*(1+.013*br);
   g.scale(c.face*sx*CS,sy*CS);
@@ -1713,7 +1814,7 @@ function drawCat(c){
   if(c.tr){const T=c.tr,u=T.up?T.t/T.dur:1-T.t/T.dur;S.tr={src:T.src,u:cl01(u)};if(!T.up){S.g=T.gt;S.wp=((T.wph%1)+1)%1}
     if(T.up?u<.4:u<.6)Object.assign(S,exprOf(T.up?T.src:c.pose,c.coat));else Object.assign(S,exprOf(T.up?c.pose:T.src,c.coat))}
   POSE[c.tr?c.tr.pz:c.pose](C,S);flush();}
-  HDY=0;BO=1;TWA=0;
+  HDY=0;BO=1;TWA=0;YA=0;
   g.restore();
   c.topU=c.y-h-POSEH[c.pose]*sy;c.top=c.y-h-POSEH[c.pose]*sy*CS; // topU=未縮放座標(粒子在縮放群組內用)
 }
@@ -1942,8 +2043,32 @@ function demo(){
   const t=demoClock%PERIOD;
   for(const id in SCRIPT){let cur=["idle",{}];for(const e of SCRIPT[id])if(t>=e[0])cur=[e[1],e[2]||{}];setState(id,cur[0],cur[1])}
 }
-window.ROOM={setState,cats:CATS,byId,redraws:()=>RD,sync:()=>SYNC,state:()=>CATS.map(c=>({id:c.id,mode:c.mode,status:c.status,x:+c.x.toFixed(1),y:+c.y.toFixed(1),pose:c.pose,over:c.over,walk:!!c.gait,face:c.face,wph:+c.wph.toFixed(3),slot:c.slot?c.slot.id:null,inSlot:c.inSlot?c.inSlot.id:null,act:c.act?c.act.type:null,top:+c.top.toFixed(0)})),slots:SLOT,
+window.ROOM={simIdle(hours,n,o){o=o||{};hours=hours||6;n=n||10;const saved=[];for(const k in SLOT)SLOT[k].forEach(s=>{saved.push([s,s.occ]);s.occ=null});let simT=0;
+  window.__SIM={t:{},n:{},tr:{},bad:{},maxAct:0,flat:o.flat!==false,hour:o.startHour!=null?()=>(o.startHour+simT/3600)%24:null};
+  const cs=[];for(let i=0;i<n;i++){const c={id:"sim"+i,name:"s"+i,coat:"ginger",kind:"bot"};initCat(c);cs.push(c)}
+  const dt=o.dt||.1,N=Math.round(hours*3600/dt);for(let s=0;s<N;s++){simT=s*dt;for(const c of cs)update(c,dt)}
+  const R=window.__SIM;window.__SIM=null;cs.forEach(freeAll);saved.forEach(([s,oc])=>s.occ=oc);return R},setState,cats:CATS,byId,redraws:()=>RD,sync:()=>SYNC,state:()=>CATS.map(c=>({id:c.id,mode:c.mode,status:c.status,x:+c.x.toFixed(1),y:+c.y.toFixed(1),pose:c.pose,over:c.over,walk:!!c.gait,face:c.face,wph:+c.wph.toFixed(3),slot:c.slot?c.slot.id:null,inSlot:c.inSlot?c.inSlot.id:null,act:c.act?c.act.type:null,top:+c.top.toFixed(0)})),slots:SLOT,
   setClock:v=>{demoClock=v},cam:()=>({Z,CX,CY,VW,VH,MODE,zmin:zmin()}),setCam:(x,y,z)=>{if(MODE==='fit')setMode('zoom');if(z)Z=Math.max(zmin(),Math.min(ZMAX,z));CX=x;CY=y;ZUSER=Z;PAN=null;afterView();redraw()},setMode,get clock(){return demoClock},poses:POSE_ORDER,coats:Object.keys(COATS)};
+/* ---------- 閒置規劃模擬:ROOM.simIdle(小時,貓數,{flat,startHour,dt}) => 各姿勢時間占比/選擇次數/轉場次數(會暫時清空家具佔位,模擬完還原;用完建議重新整理頁面) ---------- */
+const SIM_ACT=l=>!(l==="ball"||l==="loaf"||l==="sit"||l==="side"||l==="sprawl"||l==="wake");
+function SIMREC(c,a){
+  const S=window.__SIM,lab=a.lab||(a.type==="goto"?"walk":({sitFront:"sit",back:"sit",dig:"ball",mloaf:"loaf",readLie:"loaf"}[a.pose]||a.pose));
+  a._lab=lab;const prev=c._sl;if(prev===lab)return;
+  S.n[lab]=(S.n[lab]||0)+1;if(prev){const k=prev+">"+lab;S.tr[k]=(S.tr[k]||0)+1}
+  if(a.type==="goto"&&a.dec&&!a.rp)S.n["walk(dec)"]=(S.n["walk(dec)"]||0)+1;
+  if(a.type==="goto"){if(a.dec)c._sa=(c._sa||0)+1} // 只有「走」這個決定算動作類;去碗/抓板/換地方的路程算該姿勢的一部分
+  else if(lab!=="wake"){if(SIM_ACT(lab))c._sa=(c._sa||0)+1;else c._sa=0}
+  S.maxAct=Math.max(S.maxAct,c._sa||0);
+  if(lab==="sprawl"&&prev!=="side")S.bad.sprawlIn=(S.bad.sprawlIn||0)+1;
+  if(prev==="sprawl"&&lab!=="side")S.bad.sprawlOut=(S.bad.sprawlOut||0)+1;
+  if(prev==="run"&&lab!=="sit"&&lab!=="loaf")S.bad.afterRun=(S.bad.afterRun||0)+1;
+  if(lab==="run"&&c._pl)S.runAfterPlay=(S.runAfterPlay||0)+1;
+  const ly=l=>l==="ball"||l==="side"||l==="loaf"||l==="sprawl";
+  if(ly(prev)&&!ly(lab)){if(lab==="wake")S.wakeStretch=(S.wakeStretch||0)+1;else S.wakeNo=(S.wakeNo||0)+1}
+  (c._hist=c._hist||[]).push(lab);if(c._hist.length>8)c._hist.shift();if((c._sa||0)>2&&S.maxAct<=c._sa)(S.viol=S.viol||[]).length<8&&S.viol.push(c._hist.join(">"));
+  c._pl=lab==="play";c._sl=lab;
+}
+function SIMT(c,dt){const S=window.__SIM,l=c.act._lab;if(l)S.t[l]=(S.t[l]||0)+dt}
 /* ---------- 迴圈 ---------- */
 let last=0,acc=0,statusTick=0,lastSig=null,dirty=false;
 function frame(ts){
@@ -2001,8 +2126,8 @@ function animDebug(){
       const e=F||B?{x0:X0,y0:GY,x1:X0,y1:GY+(B?-1:1)*len,len,rem:len}:{x0:X0,y0:GY,x1:X0+len,y1:GY,len,rem:len};
       c.act={type:"goto",t:0,segs:[e],nexit:99,i:0,d:0,started:false,since:2,pt:0,jt:0,slot:{x:e.x1,y:e.y1,face:1}};c.spd=1}
     else if(mode==="stretch"||mode==="sprawl"||mode==="play"){ // 坐 → 姿勢 → 坐(pose=NAME 可指定)
-      const po=mode==="play"?(Q.get("pose")||"stretch"):mode;c.mode="dbg";c.pose="sitFront";c.lp="sitFront";c.act={type:"play",t:0,dur:.4,pose:"sitFront",hop:0};
-      c.q=po==='stretch'?[{type:"play",t:0,dur:+(Q.get("dur")||4.4),pose:po,hop:0,exit:"stand"},{type:"play",t:0,dur:1.3,pose:"walkS",stand:true,hop:0},{type:"play",t:0,dur:2,pose:"sitFront",hop:0}]:[{type:"play",t:0,dur:+(Q.get("dur")||2.6),pose:po,hop:0},{type:"play",t:0,dur:.8,pose:"sitFront",hop:0}]}
+      const po=mode==="play"?(Q.get("pose")||"stretch"):mode;c.mode="dbg";c.pose="sitFront";c.lp="sitFront";c.act={type:"play",t:0,dur:Q.has("yawn")?3.6:.4,pose:"sitFront",hop:0,yawn:Q.has("yawn"),yd:.4}; // &yawn=1:開場先坐著打個哈欠(3.6s)
+      c.q=po==='stretch'?[{type:"play",t:0,dur:+(Q.get("dur")||4.4),pose:po,hop:0,exit:"stand"},{type:"play",t:0,dur:1.3,pose:"walkS",stand:true,hop:0},{type:"play",t:0,dur:2,pose:"sitFront",hop:0}]:po==="side"&&Q.has("sprawl")?[{type:"play",t:0,dur:+(Q.get("dur")||2.6),pose:"side",hop:0},{type:"play",t:0,dur:7,pose:"sprawl",ss:1,hop:0},{type:"play",t:0,dur:4,pose:"side",ss:1,hop:0},{type:"play",t:0,dur:1.2,pose:"sitFront",hop:0}]:[{type:"play",t:0,dur:+(Q.get("dur")||2.6),pose:po,hop:0},{type:"play",t:0,dur:.8,pose:"sitFront",hop:0}]}
     else if(mode==="twitch"){c.pose="sitFront";c.lp="sitFront";c.act={type:"play",t:0,dur:99,pose:"sitFront"};c.tw=0}
     else if(mode==="blink"){c.pose="sitFront";c.lp="sitFront";c.act={type:"play",t:0,dur:99,pose:"sitFront"};c.blinkT=0}
   }
@@ -2234,10 +2359,11 @@ const FUI=(()=>{
       e.textContent="💬 "+n[id];e.title=n[id]+" 則未讀"}
     dirty=true;
   }
-  function viewMark(){ // 對話面板正顯示的任務若已完成且分頁可見 → 標已讀
-    const c=cur;if(!c||!c.tid||document.hidden)return;
-    const t=TL.find(x=>x.id===c.tid)||c.tasks.find(x=>x.id===c.tid);if(!t||!isUnread(t))return;
-    US.read.push(t.id);usSave();paintUnread();
+  function viewMark(){ // 對話面板開著某隻貓且分頁可見 → 這隻貓所有已完成的未讀任務都標已讀(面板預設只顯示最新一筆,可能是系統收尾任務)
+    const c=cur;if(!c||document.hidden)return;
+    const ids=new Set();[...TL,...c.tasks].forEach(t=>{if(t.bot===c.bot&&isUnread(t))ids.add(t.id)});
+    if(!ids.size)return;
+    US.read.push(...ids);usSave();paintUnread();
   }
   async function refreshUnread(){
     if(DEMO)return;const n=++unN;let rows;
@@ -2382,6 +2508,67 @@ const FUI=(()=>{
 let rszQ=0;const rszGo=()=>{if(rszQ)return;rszQ=requestAnimationFrame(()=>{rszQ=0;resize()})};
 if(window.ResizeObserver)new ResizeObserver(rszGo).observe(stage);else addEventListener("resize",rszGo);
 start();
+
+// ── 動態貓咪 favicon ──
+/* 動態貓咪 favicon:Chrome 不播 GIF/SVG 動畫圖示,所以定時換 frame。 */
+(function(){
+  var link=document.querySelector('link[rel~="icon"]');
+  if(!link){link=document.createElement('link');link.rel='icon';document.head.appendChild(link);}
+  link.type='image/svg+xml';
+  // f:{eye:0開/1瞇/2閉, ear:0/1左耳抖/2右耳抖, paw:0..2 揮手, tail:-1/0/1}
+  function svg(f){
+    var o='#ec9a45',d='#b86a1f',k='#2a2140',p='#ff8fa3';
+    var s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+     +'<rect width="64" height="64" rx="14" fill="#211b3a"/>';
+    // 尾巴(左下,擺動)
+    var tx=f.tail*5;
+    s+='<path d="M12 62C2 56 '+(4+tx)+' 44 '+(10+tx)+' 40" stroke="'+d+'" stroke-width="7" fill="none" stroke-linecap="round"/>';
+    // 耳朵
+    var le=f.ear===1?-2:0, re=f.ear===2?3:0;
+    s+='<path d="M8 '+(30+le/2)+'L10 '+(4+le)+'L28 16Z" fill="'+o+'" stroke="'+d+'" stroke-width="3" stroke-linejoin="round"/>'
+      +'<path d="M56 '+(30+re/2)+'L54 '+(4+re)+'L36 16Z" fill="'+o+'" stroke="'+d+'" stroke-width="3" stroke-linejoin="round"/>'
+      +'<path d="M12 '+(18+le)+'L13 10L21 15Z" fill="'+p+'"/><path d="M52 '+(18+re)+'L51 10L43 15Z" fill="'+p+'"/>';
+    // 臉
+    s+='<ellipse cx="32" cy="36" rx="25" ry="21" fill="'+o+'" stroke="'+d+'" stroke-width="3"/>'
+      +'<path d="M32 15v8M24 17l2 6M40 17l-2 6" stroke="'+d+'" stroke-width="3" stroke-linecap="round"/>'
+      +'<ellipse cx="32" cy="45" rx="11" ry="8" fill="#ffe4bf"/>';
+    // 眼睛
+    function eye(x){
+      if(f.eye===0)return '<ellipse cx="'+x+'" cy="33" rx="4.5" ry="6" fill="'+k+'"/><circle cx="'+(x+1.5)+'" cy="30.5" r="1.8" fill="#fff"/>';
+      if(f.eye===1)return '<ellipse cx="'+x+'" cy="34" rx="4.5" ry="3" fill="'+k+'"/>';
+      return '<path d="M'+(x-5)+' 35Q'+x+' 30 '+(x+5)+' 35" stroke="'+k+'" stroke-width="3" fill="none" stroke-linecap="round"/>';
+    }
+    s+=eye(21)+eye(43);
+    // 鼻口、鬍鬚
+    s+='<path d="M28.5 41h7l-3.5 4Z" fill="'+p+'"/>'
+      +'<path d="M32 45v2M32 47Q28 51 25 48M32 47Q36 51 39 48" stroke="'+k+'" stroke-width="2" fill="none" stroke-linecap="round"/>'
+      +'<path d="M2 40l9 2M2 47l9-2M62 40l-9 2M62 47l-9-2" stroke="#fff2d6" stroke-width="2" stroke-linecap="round"/>';
+    // 揮手的爪子(右下)
+    if(f.paw>0){
+      var a=f.paw===1?-14:14;
+      s+='<g transform="rotate('+a+' 54 62)"><rect x="47" y="44" width="14" height="19" rx="7" fill="'+o+'" stroke="'+d+'" stroke-width="3"/>'
+        +'<circle cx="54" cy="53" r="3" fill="'+p+'"/></g>';
+    }
+    return s+'</svg>';
+  }
+  var N={eye:0,ear:0,paw:0,tail:0};
+  function F(x){var r={},k;for(k in N)r[k]=N[k];for(k in x)r[k]=x[k];return r;}
+  // 8 個 frame:發呆 → 眨眼 → 擺尾 → 耳朵抖 → 揮手
+  var FRAMES=[F({}),F({eye:1}),F({eye:2}),F({tail:1}),F({tail:-1,ear:1}),F({ear:2,tail:1}),F({paw:1}),F({paw:2,eye:2})];
+  // 播放順序(index 重複=停留較久)
+  var SEQ=[0,0,0,1,2,1,0,3,0,4,0,5,0,0,6,7,6,7,6,0];
+  var URIS=FRAMES.map(function(f){return 'data:image/svg+xml,'+encodeURIComponent(svg(f));});
+  var STEP=200, i=0, timer=null;
+  var mq=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)');
+  function reduced(){return !!(mq&&mq.matches);}
+  function show(n){link.href=URIS[n];}
+  function tick(){i=(i+1)%SEQ.length;show(SEQ[i]);}
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  function start(){stop();if(document.hidden||reduced()){show(0);return;}timer=setInterval(tick,STEP);}
+  document.addEventListener('visibilitychange',start);
+  if(mq&&mq.addEventListener)mq.addEventListener('change',start);
+  show(0);start();
+})();
 </script>
 </body>
 </html>
